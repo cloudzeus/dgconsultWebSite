@@ -12,12 +12,16 @@ export default auth((req) => {
 
         // If NOT logged in and trying to access admin pages (except login)
         if (!isLoggedIn && !isLoginPage) {
-            return NextResponse.redirect(new URL("/admin/login", req.url))
+            const url = req.nextUrl.clone()
+            url.pathname = "/admin/login"
+            return NextResponse.redirect(url)
         }
 
         // If LOGGED IN and trying to access login page
         if (isLoggedIn && isLoginPage) {
-            return NextResponse.redirect(new URL("/admin/dashboard", req.url))
+            const url = req.nextUrl.clone()
+            url.pathname = "/admin/sectors" // Default dashboard
+            return NextResponse.redirect(url)
         }
     }
 
