@@ -64,7 +64,6 @@ export default async function SectorPage({ params }: { params: Promise<{ slug: s
     const { slug } = await params;
 
     const hasDb = isDbConfigured();
-    if (!hasDb) notFound();
 
     // Parallel fetch
     let sector = null;

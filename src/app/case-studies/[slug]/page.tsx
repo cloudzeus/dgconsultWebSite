@@ -57,7 +57,6 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
     const { slug } = await params;
 
     const hasDb = isDbConfigured();
-    if (!hasDb) notFound();
 
     // Fetch directly from DB
     let study = null;
