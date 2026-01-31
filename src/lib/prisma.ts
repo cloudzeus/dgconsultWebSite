@@ -3,6 +3,8 @@ import { PrismaMariaDb } from '@prisma/adapter-mariadb'
 import * as dotenv from 'dotenv'
 dotenv.config()
 
+let _prisma: PrismaClient | null = null
+
 const prismaClientSingleton = () => {
   const urlStr = process.env.DB_URL
   if (!urlStr) {
@@ -24,9 +26,25 @@ const prismaClientSingleton = () => {
 }
 
 declare global {
-  var prisma: undefined | ReturnType<typeof prismaClientSingleton>
+  var prismaGlobal: PrismaClient | undefined
 }
 
-export const prisma = globalThis.prisma ?? prismaClientSingleton()
+// Lazy getter - only creates client when accessed
+export const getPrisma = () => {
+  if (!_prisma) {
+    _prisma = globalThis.prismaGlobal ?? prismaClientSingleton()
+    if (process.env.NODE_ENV !== 'production') {
+      globalThis.prismaGlobal = _prisma
+    }
+  }
+  return _prisma
+}
 
-if (process.env.NODE_ENV !== 'production') globalThis.prisma = prisma
+// For backwards compatibility - but will throw if DB_URL not set
+export const prisma = new Proxy({} as PrismaClient, {
+  get: (target, prop) => {
+    const client = getPrisma()
+    return (client as any)[prop]
+  }
+})
+
