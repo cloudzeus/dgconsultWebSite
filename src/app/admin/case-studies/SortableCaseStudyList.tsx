@@ -47,24 +47,25 @@ export function SortableCaseStudyList({ initialItems }: SortableCaseStudyListPro
         const { active, over } = event;
 
         if (over && active.id !== over.id) {
-            setItems((items) => {
-                const oldIndex = items.findIndex((item) => item.id === active.id);
-                const newIndex = items.findIndex((item) => item.id === over.id);
+            const oldIndex = items.findIndex((item) => item.id === active.id);
+            const newIndex = items.findIndex((item) => item.id === over.id);
 
-                const newItems = arrayMove(items, oldIndex, newIndex);
+            const newItems = arrayMove(items, oldIndex, newIndex);
 
-                // Update order in DB
-                const updates = newItems.map((item, index) => ({
-                    id: item.id,
-                    sortOrder: index + 1,
-                }));
+            setItems(newItems);
 
-                updateCaseStudiesOrder(updates).then((res) => {
-                    if (!res.success) toast.error("Failed to update order");
-                });
+            // Update order in DB
+            const updates = newItems.map((item, index) => ({
+                id: item.id,
+                sortOrder: index + 1,
+            }));
 
-                return newItems;
-            });
+            try {
+                const res = await updateCaseStudiesOrder(updates);
+                if (!res.success) toast.error("Failed to update order");
+            } catch (error) {
+                toast.error("Failed to update order");
+            }
         }
     };
 
