@@ -29,11 +29,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     }
 
     return {
-        title: study.metaTitle || `${study.title} | DGCONSULT`,
-        description: study.metaDescription || study.description,
+        title: (study as any).metaTitle || `${study.title} | DGCONSULT`,
+        description: (study as any).metaDescription || study.description,
         openGraph: {
-            title: study.metaTitle || study.title,
-            description: study.metaDescription || study.description,
+            title: (study as any).metaTitle || study.title,
+            description: (study as any).metaDescription || study.description,
             images: study.featuredImage ? [study.featuredImage] : [],
         },
     };
@@ -42,10 +42,19 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function CaseStudyPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
 
+    const hasDb = !!process.env.DB_URL;
+    if (!hasDb) notFound();
+
     // Fetch directly from DB
-    const study = await prisma.caseStudy.findUnique({
-        where: { slug }
-    });
+    let study = null;
+    try {
+        study = await prisma.caseStudy.findUnique({
+            where: { slug }
+        });
+    } catch (e) {
+        console.error("Prisma lookup error on case study page:", e);
+        notFound();
+    }
 
     if (!study) {
         notFound();

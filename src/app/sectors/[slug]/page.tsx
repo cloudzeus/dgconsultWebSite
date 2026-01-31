@@ -49,11 +49,24 @@ import SectorClient from "./SectorClient";
 export default async function SectorPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
 
+    const hasDb = !!process.env.DB_URL;
+    if (!hasDb) notFound();
+
     // Parallel fetch
-    const [sector, settings] = await Promise.all([
-        prisma.sector.findUnique({ where: { slug } }),
-        (prisma as any).globalSettings.findFirst()
-    ]);
+    let sector = null;
+    let settings = null;
+
+    try {
+        const [sectorData, settingsData] = await Promise.all([
+            prisma.sector.findUnique({ where: { slug } }),
+            (prisma as any).globalSettings.findFirst()
+        ]);
+        sector = sectorData;
+        settings = settingsData;
+    } catch (e) {
+        console.error("Prisma lookup error on sector page:", e);
+        notFound();
+    }
 
     if (!sector || !sector.isActive) {
         notFound();
