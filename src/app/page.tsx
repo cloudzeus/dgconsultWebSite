@@ -1,5 +1,6 @@
 import { prisma, isDbConfigured } from "@/lib/db";
-import { Sector, GlobalSettings } from "@prisma/client";
+import { sectors as staticSectors, caseStudies as staticCaseStudies } from "@/lib/data";
+import { Sector, GlobalSettings, CaseStudy } from "@prisma/client";
 import Header from "@/sections/Header";
 import Hero from "@/sections/Hero";
 import Services from "@/sections/Services";
@@ -46,6 +47,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Home() {
   let sectors: Sector[] = [];
+  let caseStudies: CaseStudy[] = [];
   let settings: GlobalSettings | null = null;
   const hasDb = isDbConfigured();
 
@@ -56,13 +58,26 @@ export default async function Home() {
           where: { isFeatured: true, isActive: true },
           orderBy: { sortOrder: "asc" },
         }),
-        prisma.globalSettings.findFirst()
+        prisma.globalSettings.findFirst(),
+        prisma.caseStudy.findMany({
+          take: 3,
+          orderBy: { createdAt: "desc" }
+        })
       ]);
       sectors = results[0];
       settings = results[1];
+      caseStudies = results[2];
     } catch (e) {
       console.error("Prisma home data fetch error:", e);
     }
+  }
+
+  // Fallback to static data if DB is empty or fails
+  if (sectors.length === 0) {
+    sectors = staticSectors as any;
+  }
+  if (caseStudies.length === 0) {
+    caseStudies = staticCaseStudies as any;
   }
 
   const jsonLd = {
@@ -92,7 +107,7 @@ export default async function Home() {
         <About />
         <Sectors data={sectors} />
         <Process />
-        <CaseStudies />
+        <CaseStudies data={caseStudies} />
         <CTA />
         <Contact settings={settings} />
       </main>

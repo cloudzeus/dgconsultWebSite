@@ -10,7 +10,7 @@ export interface Sector {
   id: string;
   title: string;
   description: string;
-  image: string;
+  featuredImage: string;
   slug: string;
 }
 
@@ -19,7 +19,7 @@ export interface CaseStudy {
   title: string;
   description: string;
   content: string;
-  image: string;
+  featuredImage: string;
   slug: string;
   category: string;
   clientName?: string;

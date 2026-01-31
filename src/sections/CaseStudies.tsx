@@ -4,7 +4,8 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowRight } from "lucide-react";
-import { caseStudies } from "@/lib/data";
+import { caseStudies as staticCaseStudies } from "@/lib/data";
+import { CaseStudy } from "@prisma/client";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -12,7 +13,12 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-export default function CaseStudies() {
+interface CaseStudiesProps {
+  data?: CaseStudy[];
+}
+
+export default function CaseStudies({ data }: CaseStudiesProps) {
+  const displayStudies = data && data.length > 0 ? data : (staticCaseStudies as any);
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
@@ -116,7 +122,7 @@ export default function CaseStudies() {
           ref={cardsRef}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
-          {caseStudies.map((study, index) => (
+          {displayStudies.map((study: any, index: number) => (
             <Link
               key={study.id}
               href={`/case-studies/${study.slug}`}
@@ -126,7 +132,7 @@ export default function CaseStudies() {
               <div className="card-image absolute inset-0 overflow-hidden">
                 <div className="card-image-inner w-full h-full relative">
                   <Image
-                    src={study.image}
+                    src={study.featuredImage}
                     alt={study.title}
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
