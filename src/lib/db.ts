@@ -5,10 +5,11 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 const createPrismaClient = () => {
+    const dbUrl = process.env.DB_URL || "mysql://user:pass@localhost:3306/db"; // Dummy fallback for build phase
     return new PrismaClient({
         datasources: {
             db: {
-                url: process.env.DB_URL
+                url: dbUrl
             }
         },
         log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],

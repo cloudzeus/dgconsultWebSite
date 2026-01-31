@@ -23,9 +23,18 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const { slug } = await params;
-    const sector = await prisma.sector.findUnique({
-        where: { slug },
-    });
+    const hasDb = !!process.env.DB_URL && (process.env.DB_URL.startsWith("mysql") || process.env.DB_URL.startsWith("postgresql"));
+
+    let sector = null;
+    if (hasDb) {
+        try {
+            sector = await prisma.sector.findUnique({
+                where: { slug },
+            });
+        } catch (e) {
+            console.error("Prisma metadata fetch error in sector page:", e);
+        }
+    }
 
     if (!sector) {
         return { title: 'Sector Not Found' };
