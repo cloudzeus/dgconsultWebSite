@@ -13,12 +13,24 @@ export default async function SectorsPage() {
     }
 
     let sectors: Sector[] = [];
-    if (isDbConfigured()) {
-        sectors = await prisma.sector.findMany({
-            orderBy: {
-                sortOrder: "asc",
-            },
-        });
+    const dbConfigured = isDbConfigured();
+
+    console.log('[Admin Sectors] DB Configured:', dbConfigured);
+    console.log('[Admin Sectors] DB_URL exists:', !!process.env.DB_URL);
+
+    if (dbConfigured) {
+        try {
+            sectors = await prisma.sector.findMany({
+                orderBy: {
+                    sortOrder: "asc",
+                },
+            });
+            console.log('[Admin Sectors] Loaded sectors:', sectors.length);
+        } catch (error) {
+            console.error('[Admin Sectors] Error loading sectors:', error);
+        }
+    } else {
+        console.warn('[Admin Sectors] Database not configured, showing empty list');
     }
 
     return (
