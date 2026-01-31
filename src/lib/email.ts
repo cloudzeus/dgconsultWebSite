@@ -1,75 +1,94 @@
 import { Client } from "@microsoft/microsoft-graph-client";
 import { ClientSecretCredential } from "@azure/identity";
 
-const tenantId = process.env.TENANT_ID!;
-const clientId = process.env.APPLICATION_ID!;
-const clientSecret = process.env.CLIENT_SECRET_VALUE!;
-const sharedMailbox = process.env.SHARED_MAILBOX_ADDRESS || "comm@dgconsult.gr";
+// Lazy-load credentials to ensure environment variables are loaded
+let _credential: ClientSecretCredential | null = null;
 
-// Create credential
-const credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
+const getCredential = () => {
+  if (!_credential) {
+    const tenantId = process.env.TENANT_ID;
+    const clientId = process.env.APPLICATION_ID;
+    const clientSecret = process.env.CLIENT_SECRET_VALUE;
+
+    if (!tenantId || !clientId || !clientSecret) {
+      throw new Error(
+        "Missing required environment variables: TENANT_ID, APPLICATION_ID, or CLIENT_SECRET_VALUE"
+      );
+    }
+
+    _credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
+  }
+  return _credential;
+};
+
+const getSharedMailbox = () => {
+  return process.env.SHARED_MAILBOX_ADDRESS || "com@dgconsult.gr";
+};
 
 // Create Graph client
 export const getGraphClient = () => {
-    return Client.initWithMiddleware({
-        authProvider: {
-            getAccessToken: async () => {
-                const token = await credential.getToken("https://graph.microsoft.com/.default");
-                return token?.token || "";
-            },
-        },
-    });
+  const credential = getCredential();
+
+  return Client.initWithMiddleware({
+    authProvider: {
+      getAccessToken: async () => {
+        const token = await credential.getToken("https://graph.microsoft.com/.default");
+        return token?.token || "";
+      },
+    },
+  });
 };
 
 interface EmailOptions {
-    to: string;
-    subject: string;
-    htmlContent: string;
-    from?: string;
+  to: string;
+  subject: string;
+  htmlContent: string;
+  from?: string;
 }
 
 export async function sendEmail({ to, subject, htmlContent, from }: EmailOptions) {
-    try {
-        const client = getGraphClient();
+  try {
+    const client = getGraphClient();
 
-        const message = {
-            message: {
-                subject,
-                body: {
-                    contentType: "HTML",
-                    content: htmlContent,
-                },
-                toRecipients: [
-                    {
-                        emailAddress: {
-                            address: to,
-                        },
-                    },
-                ],
-                from: from ? {
-                    emailAddress: {
-                        address: from,
-                    },
-                } : undefined,
+    const message = {
+      message: {
+        subject,
+        body: {
+          contentType: "HTML",
+          content: htmlContent,
+        },
+        toRecipients: [
+          {
+            emailAddress: {
+              address: to,
             },
-            saveToSentItems: true,
-        };
+          },
+        ],
+        from: from ? {
+          emailAddress: {
+            address: from,
+          },
+        } : undefined,
+      },
+      saveToSentItems: true,
+    };
 
-        // Send email from shared mailbox
-        await client
-            .api(`/users/${sharedMailbox}/sendMail`)
-            .post(message);
+    // Send email from shared mailbox
+    const sharedMailbox = getSharedMailbox();
+    await client
+      .api(`/users/${sharedMailbox}/sendMail`)
+      .post(message);
 
-        return { success: true };
-    } catch (error) {
-        console.error("Error sending email:", error);
-        throw error;
-    }
+    return { success: true };
+  } catch (error) {
+    console.error("Error sending email:", error);
+    throw error;
+  }
 }
 
 // Email templates
 export const getCustomerConfirmationEmail = (firstName: string, lastName: string) => {
-    return `
+  return `
     <!DOCTYPE html>
     <html>
     <head>
@@ -100,7 +119,7 @@ export const getCustomerConfirmationEmail = (firstName: string, lastName: string
             <h3 style="margin-top: 0; color: #333;">Στοιχεία Επικοινωνίας</h3>
             <p style="margin: 5px 0;"><strong>Διεύθυνση:</strong> Λεωφ. Κηφισού 48, Περιστέρι – 121 33</p>
             <p style="margin: 5px 0;"><strong>Τηλέφωνο:</strong> 210 5711581</p>
-            <p style="margin: 5px 0;"><strong>Email:</strong> comm@dgconsult.gr</p>
+            <p style="margin: 5px 0;"><strong>Email:</strong> com@dgconsult.gr</p>
             <p style="margin: 5px 0;"><strong>Ώρες Λειτουργίας:</strong> Δευτέρα - Παρασκευή, 09:00 - 18:00</p>
           </div>
 
@@ -119,14 +138,14 @@ export const getCustomerConfirmationEmail = (firstName: string, lastName: string
 };
 
 export const getAdminNotificationEmail = (data: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone?: string;
-    company?: string;
-    message: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  company?: string;
+  message: string;
 }) => {
-    return `
+  return `
     <!DOCTYPE html>
     <html>
     <head>

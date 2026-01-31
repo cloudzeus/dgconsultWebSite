@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
         to: email,
         subject: "Επιβεβαίωση Λήψης Μηνύματος - DGCONSULT",
         htmlContent: getCustomerConfirmationEmail(firstName, lastName),
-        from: "comm@dgconsult.gr",
+        from: "com@dgconsult.gr",
       });
       emailPromises.push(customerEmailPromise);
     } catch (error) {
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
     // 2. Send notification email to admin
     try {
       const adminEmailPromise = sendEmail({
-        to: "comm@dgconsult.gr",
+        to: "com@dgconsult.gr",
         subject: `🔔 Νέα Αίτηση Επικοινωνίας από ${firstName} ${lastName}`,
         htmlContent: getAdminNotificationEmail({
           firstName,
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
           company,
           message,
         }),
-        from: "comm@dgconsult.gr",
+        from: "com@dgconsult.gr",
       });
       emailPromises.push(adminEmailPromise);
     } catch (error) {
