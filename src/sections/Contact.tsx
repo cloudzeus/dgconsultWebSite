@@ -14,39 +14,45 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-const contactDetails = [
-  {
-    icon: MapPin,
-    label: "Διεύθυνση",
-    value: contactInfo.address,
-    href: null,
-  },
-  {
-    icon: Phone,
-    label: "Τηλέφωνο",
-    value: contactInfo.phone,
-    href: `tel:${contactInfo.phone.replace(/\s/g, "")}`,
-  },
-  {
-    icon: Mail,
-    label: "Email",
-    value: contactInfo.email,
-    href: `mailto:${contactInfo.email}`,
-  },
-  {
-    icon: Clock,
-    label: "Ώρες Λειτουργίας",
-    value: contactInfo.hours,
-    href: null,
-  },
-];
+import { GlobalSettings } from "@prisma/client";
 
-export default function Contact() {
+interface ContactProps {
+  settings?: GlobalSettings | null;
+}
+
+export default function Contact({ settings }: ContactProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const infoRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const contactDetails = [
+    {
+      icon: MapPin,
+      label: "Διεύθυνση",
+      value: settings?.address || contactInfo.address,
+      href: null,
+    },
+    {
+      icon: Phone,
+      label: "Τηλέφωνο",
+      value: settings?.phone || contactInfo.phone,
+      href: `tel:${(settings?.phone || contactInfo.phone).replace(/\s/g, "")}`,
+    },
+    {
+      icon: Mail,
+      label: "Email",
+      value: settings?.email || contactInfo.email,
+      href: `mailto:${settings?.email || contactInfo.email}`,
+    },
+    {
+      icon: Clock,
+      label: "Ώρες Λειτουργίας",
+      value: contactInfo.hours, // Hours still constant or need adding to DB? User asked for mail, phone, address, social media.
+      href: null,
+    },
+  ];
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -299,8 +305,8 @@ export default function Contact() {
                   type="submit"
                   disabled={isSubmitting || isSubmitted}
                   className={`w-full h-14 text-base font-semibold rounded-lg transition-all duration-300 ${isSubmitted
-                      ? "bg-green-500 hover:bg-green-500"
-                      : "bg-[#D32F2F] hover:bg-[#B71C1C]"
+                    ? "bg-green-500 hover:bg-green-500"
+                    : "bg-[#D32F2F] hover:bg-[#B71C1C]"
                     } text-white hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(211,47,47,0.3)]`}
                 >
                   {isSubmitting ? (

@@ -97,6 +97,7 @@ export function SortableSectorList({ initialItems }: SortableSectorListProps) {
                         <TableHeader>
                             <TableRow>
                                 <TableHead className="w-[50px]"></TableHead>
+                                <TableHead className="w-[80px]">Image</TableHead>
                                 <TableHead>Title</TableHead>
                                 <TableHead>Slug</TableHead>
                                 <TableHead>Featured</TableHead>
@@ -150,6 +151,21 @@ function SortableRow({ item, onEdit, onDelete }: { item: Sector; onEdit: () => v
                 <button {...attributes} {...listeners} className="cursor-grab hover:text-gray-600">
                     <GripVertical className="h-5 w-5 text-gray-400" />
                 </button>
+            </TableCell>
+            <TableCell>
+                {item.featuredImage ? (
+                    <div className="relative w-12 h-8 rounded overflow-hidden bg-gray-100">
+                        <img
+                            src={item.featuredImage}
+                            alt={item.title}
+                            className="w-full h-full object-cover"
+                        />
+                    </div>
+                ) : (
+                    <div className="w-12 h-8 bg-gray-100 rounded flex items-center justify-center">
+                        <span className="text-[10px] text-gray-400">No img</span>
+                    </div>
+                )}
             </TableCell>
             <TableCell className="font-medium">{item.title}</TableCell>
             <TableCell className="text-gray-500 font-mono text-xs">{item.slug}</TableCell>

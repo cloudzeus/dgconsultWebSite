@@ -10,7 +10,13 @@ import { DialogTrigger } from "@/components/ui/dialog";
 import ContactModal from "@/components/ContactModal";
 import { navItems } from "@/lib/data";
 
-export default function Header() {
+import { GlobalSettings } from "@prisma/client";
+
+interface HeaderProps {
+  settings?: GlobalSettings | null;
+}
+
+export default function Header({ settings }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -67,6 +73,7 @@ export default function Header() {
         {/* CTA Button */}
         <div className="hidden lg:block">
           <ContactModal
+            settings={settings}
             trigger={
               <DialogTrigger asChild>
                 <Button className="bg-[#D32F2F] hover:bg-[#B71C1C] text-white font-semibold px-6 py-2.5 rounded-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(211,47,47,0.3)]">
@@ -128,6 +135,7 @@ export default function Header() {
                   <div className="mt-auto p-8 space-y-8">
                     <div className="pt-8 border-t border-gray-100">
                       <ContactModal
+                        settings={settings}
                         trigger={
                           <DialogTrigger asChild>
                             <Button
@@ -142,7 +150,7 @@ export default function Header() {
                     </div>
                     <div className="space-y-2 text-center">
                       <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">Επικοινωνία</p>
-                      <p className="text-sm font-semibold text-gray-700">info@dgconsult.gr</p>
+                      <p className="text-sm font-semibold text-gray-700">{settings?.email || "info@dgconsult.gr"}</p>
                     </div>
                   </div>
                 </div>

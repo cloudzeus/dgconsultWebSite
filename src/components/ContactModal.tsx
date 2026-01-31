@@ -5,18 +5,26 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button";
 import { MapPin, Phone, Mail } from "lucide-react";
 
+
+import { GlobalSettings } from "@prisma/client";
+
 interface ContactModalProps {
     trigger?: React.ReactNode;
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
+    settings?: GlobalSettings | null;
 }
 
-export default function ContactModal({ trigger, open: controlledOpen, onOpenChange }: ContactModalProps) {
+export default function ContactModal({ trigger, open: controlledOpen, onOpenChange, settings }: ContactModalProps) {
     const [internalOpen, setInternalOpen] = useState(false);
 
     const isControlled = controlledOpen !== undefined;
     const isOpen = isControlled ? controlledOpen : internalOpen;
     const setIsOpen = isControlled ? onOpenChange! : setInternalOpen;
+
+    const email = settings?.email || "info@dgconsult.gr";
+    const phone = settings?.phone || "210 5711581";
+    const address = settings?.address || "Λεωφ. Κηφισού 48\nΠεριστέρι – 121 33";
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -41,9 +49,8 @@ export default function ContactModal({ trigger, open: controlledOpen, onOpenChan
                         </div>
                         <div>
                             <h3 className="font-bold text-[#1A1A1A] mb-1 text-sm uppercase tracking-wider">Διεύθυνση</h3>
-                            <p className="text-[#333333] font-medium leading-relaxed">
-                                Λεωφ. Κηφισού 48<br />
-                                Περιστέρι – 121 33
+                            <p className="text-[#333333] font-medium leading-relaxed whitespace-pre-line">
+                                {address}
                             </p>
                         </div>
                     </div>
@@ -56,10 +63,10 @@ export default function ContactModal({ trigger, open: controlledOpen, onOpenChan
                         <div>
                             <h3 className="font-bold text-[#1A1A1A] mb-1 text-sm uppercase tracking-wider">Τηλέφωνο</h3>
                             <a
-                                href="tel:2105711581"
+                                href={`tel:${phone.replace(/\s/g, "")}`}
                                 className="text-[#333333] font-semibold text-lg hover:text-[#D32F2F] transition-colors"
                             >
-                                210 5711581
+                                {phone}
                             </a>
                         </div>
                     </div>
@@ -72,10 +79,10 @@ export default function ContactModal({ trigger, open: controlledOpen, onOpenChan
                         <div>
                             <h3 className="font-bold text-[#1A1A1A] mb-1 text-sm uppercase tracking-wider">Email</h3>
                             <a
-                                href="mailto:info@dgconsult.gr"
+                                href={`mailto:${email}`}
                                 className="text-[#333333] font-semibold hover:text-[#D32F2F] transition-colors"
                             >
-                                info@dgconsult.gr
+                                {email}
                             </a>
                         </div>
                     </div>
@@ -86,7 +93,7 @@ export default function ContactModal({ trigger, open: controlledOpen, onOpenChan
                             asChild
                             className="w-full bg-[#D32F2F] hover:bg-[#B71C1C] text-white font-bold py-6 rounded-xl shadow-lg shadow-[#D32F2F]/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
                         >
-                            <a href="tel:2105711581">
+                            <a href={`tel:${phone.replace(/\s/g, "")}`}>
                                 Καλέστε Τώρα
                             </a>
                         </Button>
@@ -95,7 +102,7 @@ export default function ContactModal({ trigger, open: controlledOpen, onOpenChan
                             variant="outline"
                             className="w-full border-2 border-[#D32F2F] text-[#D32F2F] hover:bg-[#D32F2F] hover:text-white font-bold py-6 rounded-xl transition-all"
                         >
-                            <a href="mailto:info@dgconsult.gr">
+                            <a href={`mailto:${email}`}>
                                 Στείλτε Email
                             </a>
                         </Button>

@@ -16,14 +16,20 @@ if (typeof window !== "undefined") {
 const quickLinks = navItems;
 const serviceLinks = services.slice(0, 5);
 
-const socialLinks = [
-  { icon: Linkedin, href: "#", label: "LinkedIn" },
-  { icon: Twitter, href: "#", label: "Twitter" },
-  { icon: Facebook, href: "#", label: "Facebook" },
-];
+import { GlobalSettings } from "@prisma/client";
 
-export default function Footer() {
+interface FooterProps {
+  settings?: GlobalSettings | null;
+}
+
+export default function Footer({ settings }: FooterProps) {
   const footerRef = useRef<HTMLElement>(null);
+
+  const socialLinks = [
+    { icon: Linkedin, href: settings?.linkedin || "#", label: "LinkedIn" },
+    { icon: Twitter, href: settings?.twitter || "#", label: "Twitter" },
+    { icon: Facebook, href: settings?.facebook || "#", label: "Facebook" },
+  ];
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -130,7 +136,7 @@ export default function Footer() {
                   />
                 </svg>
                 <span className="text-gray-400">
-                  Λεωφ. Κηφισού 48, Περιστέρι – 121 33
+                  {settings?.address || "Λεωφ. Κηφισού 48, Περιστέρι – 121 33"}
                 </span>
               </li>
               <li className="flex items-center gap-3">
@@ -148,10 +154,10 @@ export default function Footer() {
                   />
                 </svg>
                 <a
-                  href="tel:2105711581"
+                  href={`tel:${settings?.phone || "2105711581"}`}
                   className="text-gray-400 hover:text-white transition-colors"
                 >
-                  210 5711581
+                  {settings?.phone || "210 5711581"}
                 </a>
               </li>
               <li className="flex items-center gap-3">
@@ -169,10 +175,10 @@ export default function Footer() {
                   />
                 </svg>
                 <a
-                  href="mailto:info@dgconsult.gr"
+                  href={`mailto:${settings?.email || "info@dgconsult.gr"}`}
                   className="text-gray-400 hover:text-white transition-colors"
                 >
-                  info@dgconsult.gr
+                  {settings?.email || "info@dgconsult.gr"}
                 </a>
               </li>
             </ul>

@@ -118,6 +118,19 @@ async function main() {
         }
     }
 
+    // Seed Global Settings
+    const settingsCount = await prisma.globalSettings.count();
+    if (settingsCount === 0) {
+        await prisma.globalSettings.create({
+            data: {
+                email: "info@dgconsult.gr",
+                phone: "210 5711581",
+                address: "Λεωφ. Κηφισού 48, Περιστέρι – 121 33",
+            }
+        });
+        console.log("Created initial Global Settings.");
+    }
+
     console.log("Seeding finished.");
 }
 

@@ -14,15 +14,18 @@ import SmoothScroll from "@/components/SmoothScroll";
 export const revalidate = 60; // Revalidate every 60 seconds
 
 export default async function Home() {
-  const sectors = await prisma.sector.findMany({
-    where: { isFeatured: true, isActive: true },
-    orderBy: { sortOrder: "asc" },
-  });
+  const [sectors, settings] = await Promise.all([
+    prisma.sector.findMany({
+      where: { isFeatured: true, isActive: true },
+      orderBy: { sortOrder: "asc" },
+    }),
+    prisma.globalSettings.findFirst()
+  ]);
 
   return (
     <main className="min-h-screen">
       <SmoothScroll />
-      <Header />
+      <Header settings={settings} />
       <Hero />
       <Services />
       <About />
@@ -30,8 +33,8 @@ export default async function Home() {
       <Process />
       <CaseStudies />
       <CTA />
-      <Contact />
-      <Footer />
+      <Contact settings={settings} />
+      <Footer settings={settings} />
     </main>
   );
 }
