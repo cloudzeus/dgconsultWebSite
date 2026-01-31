@@ -23,18 +23,20 @@ export default async function Home() {
   ]);
 
   return (
-    <main className="min-h-screen">
+    <>
       <SmoothScroll />
       <Header settings={settings} />
-      <Hero />
-      <Services />
-      <About />
-      <Sectors data={sectors} />
-      <Process />
-      <CaseStudies />
-      <CTA />
-      <Contact settings={settings} />
+      <main className="min-h-screen">
+        <Hero />
+        <Services />
+        <About />
+        <Sectors data={sectors} />
+        <Process />
+        <CaseStudies />
+        <CTA />
+        <Contact settings={settings} />
+      </main>
       <Footer settings={settings} />
-    </main>
+    </>
   );
 }

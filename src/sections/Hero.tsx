@@ -23,55 +23,7 @@ export default function Hero() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-
-      // Badge animation
-      tl.fromTo(
-        badgeRef.current,
-        { clipPath: "inset(0 100% 0 0)", opacity: 0 },
-        { clipPath: "inset(0 0% 0 0)", opacity: 1, duration: 0.5 },
-        0.4
-      );
-
-      // Title words animation
-      if (titleRef.current) {
-        const words = titleRef.current.querySelectorAll(".word");
-        tl.fromTo(
-          words,
-          { y: 60, opacity: 0, rotateX: 45 },
-          { y: 0, opacity: 1, rotateX: 0, duration: 0.7, stagger: 0.1 },
-          0.6
-        );
-      }
-
-      // Subtitle animation
-      tl.fromTo(
-        subtitleRef.current,
-        { y: 30, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.6 },
-        1
-      );
-
-      // CTA buttons animation
-      if (ctaRef.current) {
-        const buttons = ctaRef.current.querySelectorAll("a, button");
-        tl.fromTo(
-          buttons,
-          { scale: 0.9, opacity: 0 },
-          { scale: 1, opacity: 1, duration: 0.5, stagger: 0.1, ease: "back.out(1.7)" },
-          1.2
-        );
-      }
-
-      // Floating shapes fade in
-      tl.fromTo(
-        shapesRef.current,
-        { opacity: 0 },
-        { opacity: 1, duration: 0.8 },
-        0.8
-      );
-
-      // Scroll-triggered parallax
+      // Scroll-triggered parallax (kept as it is interaction-driven, not load-critical)
       ScrollTrigger.create({
         trigger: sectionRef.current,
         start: "top top",
@@ -126,7 +78,7 @@ export default function Hero() {
       </div>
 
       {/* Floating Decorative Shapes */}
-      <div ref={shapesRef} className="absolute inset-0 pointer-events-none">
+      <div ref={shapesRef} className="absolute inset-0 pointer-events-none animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
         {/* Circle 1 */}
         <div
           className="absolute top-[15%] right-[10%] w-32 h-32 rounded-full border-2 border-[#D32F2F]/10 animate-float"
@@ -175,7 +127,7 @@ export default function Hero() {
       >
         <div className="max-w-3xl">
           {/* Badge */}
-          <div ref={badgeRef} className="mb-6">
+          <div ref={badgeRef} className="mb-6 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
             <Badge
               variant="outline"
               className="px-4 py-2 text-sm font-medium border-[#D32F2F]/30 text-[#D32F2F] bg-[#D32F2F]/5"
@@ -187,20 +139,20 @@ export default function Hero() {
           {/* Title */}
           <h1
             ref={titleRef}
-            className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-[#333333] leading-[1.1] mb-6"
-            style={{ perspective: "1000px" }}
+            className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-[#333333] leading-[1.1] mb-6 animate-fade-in-up"
+            style={{ perspective: "1000px", animationDelay: "0.2s" }}
           >
-            <span className="word inline-block">Business</span>{" "}
-            <span className="word inline-block">Solutions</span>
+            Business Solutions
             <br />
-            <span className="word inline-block text-[#D32F2F]">on</span>{" "}
-            <span className="word inline-block text-[#D32F2F]">Demand</span>
+            <span className="text-[#D32F2F]">on</span>{" "}
+            <span className="text-[#D32F2F]">Demand</span>
           </h1>
 
           {/* Subtitle */}
           <p
             ref={subtitleRef}
-            className="text-lg md:text-xl text-[#666666] leading-relaxed mb-10 max-w-2xl"
+            className="text-lg md:text-xl text-[#666666] leading-relaxed mb-10 max-w-2xl animate-fade-in-up"
+            style={{ animationDelay: "0.3s" }}
           >
             Εξειδικευμένες λύσεις ψηφιακού μετασχηματισμού και ανάλυσης
             δεδομένων για τον αγροδιατροφικό τομέα. Συνδυάζουμε τεχνητή
@@ -209,7 +161,7 @@ export default function Hero() {
           </p>
 
           {/* CTAs */}
-          <div ref={ctaRef} className="flex flex-wrap gap-4">
+          <div ref={ctaRef} className="flex flex-wrap gap-4 animate-fade-in-up" style={{ animationDelay: "0.5s" }}>
             <Button
               asChild
               size="lg"
