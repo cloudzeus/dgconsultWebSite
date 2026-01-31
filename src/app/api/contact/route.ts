@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { sendEmail, getCustomerConfirmationEmail, getAdminNotificationEmail } from "@/lib/email";
 
 // Required for dynamic API routes
 export const dynamic = "force-dynamic";
@@ -26,7 +27,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Save to database
+    // Save to database first (even if email fails, we don't lose the data)
     const submission = await prisma.contactSubmission.create({
       data: {
         firstName,
@@ -38,17 +39,62 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Here you would typically also send an email notification
-    // For now, we just save to the database
+    // Send emails asynchronously (don't block the response)
+    const emailPromises = [];
+
+    // 1. Send confirmation email to customer
+    try {
+      const customerEmailPromise = sendEmail({
+        to: email,
+        subject: "Επιβεβαίωση Λήψης Μηνύματος - DGCONSULT",
+        htmlContent: getCustomerConfirmationEmail(firstName, lastName),
+        from: "comm@dgconsult.gr",
+      });
+      emailPromises.push(customerEmailPromise);
+    } catch (error) {
+      console.error("Error queuing customer email:", error);
+    }
+
+    // 2. Send notification email to admin
+    try {
+      const adminEmailPromise = sendEmail({
+        to: "comm@dgconsult.gr",
+        subject: `🔔 Νέα Αίτηση Επικοινωνίας από ${firstName} ${lastName}`,
+        htmlContent: getAdminNotificationEmail({
+          firstName,
+          lastName,
+          email,
+          phone,
+          company,
+          message,
+        }),
+        from: "comm@dgconsult.gr",
+      });
+      emailPromises.push(adminEmailPromise);
+    } catch (error) {
+      console.error("Error queuing admin email:", error);
+    }
+
+    // Wait for all emails to be sent (but don't fail if they don't)
+    try {
+      await Promise.allSettled(emailPromises);
+    } catch (error) {
+      console.error("Error sending emails:", error);
+      // Continue anyway - data is saved
+    }
 
     return NextResponse.json(
-      { success: true, id: submission.id },
+      {
+        success: true,
+        id: submission.id,
+        message: "Το μήνυμά σας εστάλη με επιτυχία. Θα επικοινωνήσουμε μαζί σας σύντομα!"
+      },
       { status: 201 }
     );
   } catch (error) {
     console.error("Contact form submission error:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Παρουσιάστηκε σφάλμα. Παρακαλώ δοκιμάστε ξανά." },
       { status: 500 }
     );
   }
@@ -71,3 +117,4 @@ export async function GET() {
     );
   }
 }
+

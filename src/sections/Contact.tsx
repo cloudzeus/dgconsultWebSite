@@ -107,20 +107,48 @@ export default function Contact() {
     return () => ctx.revert();
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      firstName: formData.get("firstName") as string,
+      lastName: formData.get("lastName") as string,
+      company: formData.get("company") as string,
+      phone: formData.get("phone") as string,
+      email: formData.get("email") as string,
+      message: formData.get("message") as string,
+    };
 
-    setIsSubmitting(false);
-    setIsSubmitted(true);
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
 
-    // Reset after 3 seconds
-    setTimeout(() => {
-      setIsSubmitted(false);
-    }, 3000);
+      if (!response.ok) {
+        throw new Error("Failed to submit form");
+      }
+
+      setIsSubmitting(false);
+      setIsSubmitted(true);
+
+      // Reset form
+      e.currentTarget.reset();
+
+      // Reset success state after 5 seconds
+      setTimeout(() => {
+        setIsSubmitted(false);
+      }, 5000);
+    } catch (error) {
+      console.error("Form submission error:", error);
+      setIsSubmitting(false);
+      alert("Παρουσιάστηκε σφάλμα. Παρακαλώ δοκιμάστε ξανά.");
+    }
   };
 
   return (
@@ -270,11 +298,10 @@ export default function Contact() {
                 <Button
                   type="submit"
                   disabled={isSubmitting || isSubmitted}
-                  className={`w-full h-14 text-base font-semibold rounded-lg transition-all duration-300 ${
-                    isSubmitted
+                  className={`w-full h-14 text-base font-semibold rounded-lg transition-all duration-300 ${isSubmitted
                       ? "bg-green-500 hover:bg-green-500"
                       : "bg-[#D32F2F] hover:bg-[#B71C1C]"
-                  } text-white hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(211,47,47,0.3)]`}
+                    } text-white hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(211,47,47,0.3)]`}
                 >
                   {isSubmitting ? (
                     <span className="flex items-center justify-center">

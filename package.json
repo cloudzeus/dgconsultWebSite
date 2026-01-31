@@ -9,7 +9,9 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@azure/identity": "^4.13.0",
     "@gsap/react": "^2.1.2",
+    "@microsoft/microsoft-graph-client": "^3.0.7",
     "@prisma/adapter-mariadb": "^7.3.0",
     "@prisma/client": "^7.3.0",
     "@prisma/config": "^7.3.0",
