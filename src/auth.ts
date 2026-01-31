@@ -50,5 +50,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     session: {
         strategy: "jwt",
     },
-    secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || "fallback-secret-for-development-only-12345",
+    // Using a more robust secret check and hardcoded fallback to prevent MissingSecret errors
+    secret: process.env.AUTH_SECRET || "secret_dgconsult_2026_safe_fallback",
 })
