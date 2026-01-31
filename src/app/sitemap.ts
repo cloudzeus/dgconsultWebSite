@@ -6,7 +6,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     let sectors: any[] = [];
     let caseStudies: any[] = [];
 
-    if (process.env.DB_URL) {
+    if (process.env.DB_URL && (process.env.DB_URL.startsWith("mysql") || process.env.DB_URL.startsWith("postgresql"))) {
         try {
             sectors = await prisma.sector.findMany({
                 where: { isActive: true },

@@ -47,7 +47,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function Home() {
   let sectors: Sector[] = [];
   let settings: GlobalSettings | null = null;
-  const hasDb = !!process.env.DB_URL;
+  const hasDb = !!process.env.DB_URL && (process.env.DB_URL.startsWith("mysql") || process.env.DB_URL.startsWith("postgresql"));
 
   if (hasDb) {
     try {
