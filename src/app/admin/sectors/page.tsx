@@ -1,4 +1,5 @@
-import { prisma } from "@/lib/db";
+import { prisma, isDbConfigured } from "@/lib/db";
+import { Sector } from "@prisma/client";
 import { SortableSectorList } from "./SortableSectorList";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
@@ -11,11 +12,14 @@ export default async function SectorsPage() {
         redirect("/admin/login");
     }
 
-    const sectors = await prisma.sector.findMany({
-        orderBy: {
-            sortOrder: "asc",
-        },
-    });
+    let sectors: Sector[] = [];
+    if (isDbConfigured()) {
+        sectors = await prisma.sector.findMany({
+            orderBy: {
+                sortOrder: "asc",
+            },
+        });
+    }
 
     return (
         <div className="space-y-6">

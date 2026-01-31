@@ -1,11 +1,11 @@
-import { prisma } from "@/lib/db";
+import { prisma, isDbConfigured } from "@/lib/db";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Metadata } from "next";
 
 export async function generateStaticParams() {
-    if (!process.env.DB_URL) return [];
+    if (!isDbConfigured()) return [];
 
     try {
         const sectors = await prisma.sector.findMany({
@@ -23,7 +23,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const { slug } = await params;
-    const hasDb = !!process.env.DB_URL && (process.env.DB_URL.startsWith("mysql") || process.env.DB_URL.startsWith("postgresql"));
+    const hasDb = isDbConfigured();
 
     let sector = null;
     if (hasDb) {
@@ -58,7 +58,7 @@ import SectorClient from "./SectorClient";
 export default async function SectorPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
 
-    const hasDb = !!process.env.DB_URL && (process.env.DB_URL.startsWith("mysql") || process.env.DB_URL.startsWith("postgresql"));
+    const hasDb = isDbConfigured();
     if (!hasDb) notFound();
 
     // Parallel fetch

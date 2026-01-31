@@ -1,10 +1,10 @@
-import { prisma } from "@/lib/db";
+import { prisma, isDbConfigured } from "@/lib/db";
 import { notFound } from "next/navigation";
 import CaseStudyClient from "./CaseStudyClient";
 import { Metadata } from "next";
 
 export async function generateStaticParams() {
-    if (!process.env.DB_URL) return [];
+    if (!isDbConfigured()) return [];
 
     try {
         const studies = await prisma.caseStudy.findMany({
@@ -22,7 +22,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const { slug } = await params;
-    const hasDb = !!process.env.DB_URL && (process.env.DB_URL.startsWith("mysql") || process.env.DB_URL.startsWith("postgresql"));
+    const hasDb = isDbConfigured();
 
     let study = null;
     if (hasDb) {
@@ -51,7 +51,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function CaseStudyPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
 
-    const hasDb = !!process.env.DB_URL && (process.env.DB_URL.startsWith("mysql") || process.env.DB_URL.startsWith("postgresql"));
+    const hasDb = isDbConfigured();
     if (!hasDb) notFound();
 
     // Fetch directly from DB

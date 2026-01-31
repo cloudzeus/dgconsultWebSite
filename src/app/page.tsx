@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/db";
+import { prisma, isDbConfigured } from "@/lib/db";
 import { Sector, GlobalSettings } from "@prisma/client";
 import Header from "@/sections/Header";
 import Hero from "@/sections/Hero";
@@ -17,7 +17,7 @@ import { Metadata } from "next";
 export const revalidate = 60; // Revalidate every 60 seconds
 
 export async function generateMetadata(): Promise<Metadata> {
-  const hasDb = !!process.env.DB_URL;
+  const hasDb = isDbConfigured();
   let settings: GlobalSettings | null = null;
 
   if (hasDb) {
@@ -47,7 +47,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function Home() {
   let sectors: Sector[] = [];
   let settings: GlobalSettings | null = null;
-  const hasDb = !!process.env.DB_URL && (process.env.DB_URL.startsWith("mysql") || process.env.DB_URL.startsWith("postgresql"));
+  const hasDb = isDbConfigured();
 
   if (hasDb) {
     try {

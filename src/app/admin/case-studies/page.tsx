@@ -1,4 +1,5 @@
-import { prisma } from "@/lib/db";
+import { prisma, isDbConfigured } from "@/lib/db";
+import { CaseStudy } from "@prisma/client";
 import { SortableCaseStudyList } from "./SortableCaseStudyList";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
@@ -11,11 +12,14 @@ export default async function CaseStudiesPage() {
         redirect("/admin/login");
     }
 
-    const caseStudies = await prisma.caseStudy.findMany({
-        orderBy: {
-            sortOrder: "asc",
-        },
-    });
+    let caseStudies: CaseStudy[] = [];
+    if (isDbConfigured()) {
+        caseStudies = await prisma.caseStudy.findMany({
+            orderBy: {
+                sortOrder: "asc",
+            },
+        });
+    }
 
     return (
         <div className="space-y-6">
