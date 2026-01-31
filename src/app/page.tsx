@@ -16,7 +16,16 @@ import { Metadata } from "next";
 export const revalidate = 60; // Revalidate every 60 seconds
 
 export async function generateMetadata(): Promise<Metadata> {
-  const settings = await prisma.globalSettings.findFirst();
+  const hasDb = !!process.env.DB_URL;
+  let settings = null;
+
+  if (hasDb) {
+    try {
+      settings = await prisma.globalSettings.findFirst();
+    } catch (e) {
+      console.error("Prisma metadata fetch error:", e);
+    }
+  }
 
   const title = settings?.defaultMetaTitle || "DGCONSULT - Business Solutions on Demand";
   const description = settings?.defaultMetaDescription || "Εξειδικευμένες λύσεις ψηφιακού μετασχηματισμού και ανάλυσης δεδομένων για τον αγροδιατροφικό τομέα. AI, IoT, Big Data Analytics.";
@@ -35,13 +44,25 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const [sectors, settings] = await Promise.all([
-    prisma.sector.findMany({
-      where: { isFeatured: true, isActive: true },
-      orderBy: { sortOrder: "asc" },
-    }),
-    prisma.globalSettings.findFirst()
-  ]);
+  let sectors = [];
+  let settings = null;
+  const hasDb = !!process.env.DB_URL;
+
+  if (hasDb) {
+    try {
+      const results = await Promise.all([
+        prisma.sector.findMany({
+          where: { isFeatured: true, isActive: true },
+          orderBy: { sortOrder: "asc" },
+        }),
+        prisma.globalSettings.findFirst()
+      ]);
+      sectors = results[0];
+      settings = results[1];
+    } catch (e) {
+      console.error("Prisma home data fetch error:", e);
+    }
+  }
 
   const jsonLd = {
     '@context': 'https://schema.org',
