@@ -5,14 +5,18 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { sectors } from "@/lib/data";
 import Link from "next/link";
+import { Sector } from "@prisma/client";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-export default function Sectors() {
+interface SectorsProps {
+  data: Sector[];
+}
+
+export default function Sectors({ data }: SectorsProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
@@ -82,7 +86,10 @@ export default function Sectors() {
     }, sectionRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [data]);
+
+  // Use the provided data or fallback to empty array (or static if you prefer mixed strategy, but pure dynamic is better)
+  const sectorsToDisplay = data;
 
   return (
     <section
@@ -113,7 +120,7 @@ export default function Sectors() {
 
         {/* Sector Cards */}
         <div ref={cardsRef} className="space-y-12">
-          {sectors.map((sector, index) => {
+          {sectorsToDisplay.map((sector, index) => {
             const isEven = index % 2 === 1;
             return (
               <div
@@ -126,12 +133,18 @@ export default function Sectors() {
                     }`}
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-[#D32F2F]/20 to-[#333333]/20 group-hover:opacity-0 transition-opacity duration-500 z-10" />
-                  <Image
-                    src={sector.image}
-                    alt={sector.title}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
+                  {sector.featuredImage ? (
+                    <Image
+                      src={sector.featuredImage}
+                      alt={sector.title}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                      <span className="text-gray-400">No Image</span>
+                    </div>
+                  )}
                   <div className="absolute inset-0 bg-black/10 z-[5]" />
                 </div>
 
@@ -147,7 +160,7 @@ export default function Sectors() {
                     {sector.description}
                   </p>
                   <Link
-                    href={`#${sector.slug}`}
+                    href={`/sectors/${sector.slug}`}
                     className="inline-flex items-center text-[#D32F2F] font-semibold group/link"
                   >
                     <span className="relative">

@@ -1,8 +1,4 @@
-"use client";
-
-import { useEffect } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { prisma } from "@/lib/db";
 import Header from "@/sections/Header";
 import Hero from "@/sections/Hero";
 import Services from "@/sections/Services";
@@ -13,33 +9,24 @@ import CaseStudies from "@/sections/CaseStudies";
 import CTA from "@/sections/CTA";
 import Contact from "@/sections/Contact";
 import Footer from "@/sections/Footer";
+import SmoothScroll from "@/components/SmoothScroll";
 
-// Register GSAP plugins
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger);
-}
+export const revalidate = 60; // Revalidate every 60 seconds
 
-export default function Home() {
-  useEffect(() => {
-    // Initialize smooth scroll behavior
-    document.documentElement.style.scrollBehavior = "smooth";
-
-    // Refresh ScrollTrigger on load
-    ScrollTrigger.refresh();
-
-    // Cleanup
-    return () => {
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-    };
-  }, []);
+export default async function Home() {
+  const sectors = await prisma.sector.findMany({
+    where: { isFeatured: true, isActive: true },
+    orderBy: { sortOrder: "asc" },
+  });
 
   return (
     <main className="min-h-screen">
+      <SmoothScroll />
       <Header />
       <Hero />
       <Services />
       <About />
-      <Sectors />
+      <Sectors data={sectors} />
       <Process />
       <CaseStudies />
       <CTA />
