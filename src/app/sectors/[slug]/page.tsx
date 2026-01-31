@@ -5,13 +5,20 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export async function generateStaticParams() {
-    const sectors = await prisma.sector.findMany({
-        where: { isActive: true },
-        select: { slug: true },
-    });
-    return sectors.map((sector) => ({
-        slug: sector.slug,
-    }));
+    if (!process.env.DB_URL) return [];
+
+    try {
+        const sectors = await prisma.sector.findMany({
+            where: { isActive: true },
+            select: { slug: true },
+        });
+        return sectors.map((sector) => ({
+            slug: sector.slug,
+        }));
+    } catch (error) {
+        console.error("Error generating static params for sectors:", error);
+        return [];
+    }
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {

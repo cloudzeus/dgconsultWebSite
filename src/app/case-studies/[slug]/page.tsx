@@ -4,13 +4,20 @@ import CaseStudyClient from "./CaseStudyClient";
 import { Metadata } from "next";
 
 export async function generateStaticParams() {
-    const studies = await prisma.caseStudy.findMany({
-        where: { isPublished: true },
-        select: { slug: true }
-    });
-    return studies.map((study) => ({
-        slug: study.slug,
-    }));
+    if (!process.env.DB_URL) return [];
+
+    try {
+        const studies = await prisma.caseStudy.findMany({
+            where: { isPublished: true },
+            select: { slug: true }
+        });
+        return studies.map((study) => ({
+            slug: study.slug,
+        }));
+    } catch (error) {
+        console.error("Error generating static params for case studies:", error);
+        return [];
+    }
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
