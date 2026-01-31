@@ -129,11 +129,11 @@ export default function CTA() {
         <p data-animate className="text-white/80">
           Ή καλέστε μας στο{" "}
           <a
-            href="tel:+302101234567"
+            href="tel:2105711581"
             className="text-white font-semibold hover:underline inline-flex items-center"
           >
             <Phone className="mr-2 h-4 w-4" />
-            +30 210 1234567
+            210 5711581
           </a>
         </p>
       </div>
