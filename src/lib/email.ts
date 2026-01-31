@@ -49,6 +49,7 @@ interface EmailOptions {
 export async function sendEmail({ to, subject, htmlContent, from }: EmailOptions) {
   try {
     const client = getGraphClient();
+    const sharedMailbox = getSharedMailbox(); // gkozyris@dgconsult.gr
 
     const message = {
       message: {
@@ -64,17 +65,12 @@ export async function sendEmail({ to, subject, htmlContent, from }: EmailOptions
             },
           },
         ],
-        from: from ? {
-          emailAddress: {
-            address: from,
-          },
-        } : undefined,
+        // Don't set custom from - will use the mailbox owner's address (gkozyris@dgsmart.gr)
       },
       saveToSentItems: true,
     };
 
-    // Send email from shared mailbox
-    const sharedMailbox = getSharedMailbox();
+    // Send email from gkozyris@dgsmart.gr mailbox
     await client
       .api(`/users/${sharedMailbox}/sendMail`)
       .post(message);
