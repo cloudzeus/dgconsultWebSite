@@ -12,6 +12,9 @@ const sectorSchema = z.object({
     isFeatured: z.boolean().default(false),
     featuredImage: z.string().optional(),
     content: z.string().optional(),
+    metaTitle: z.string().optional(),
+    metaDescription: z.string().optional(),
+    deepDive: z.string().optional(),
 });
 
 export async function createSector(prevState: any, formData: FormData) {
@@ -35,6 +38,7 @@ export async function createSector(prevState: any, formData: FormData) {
             data: {
                 ...validatedData,
                 content: validatedData.content || "",
+                deepDive: validatedData.deepDive ? JSON.parse(validatedData.deepDive) : null,
                 sortOrder: newOrder,
             },
         });
@@ -56,13 +60,11 @@ export async function updateSector(id: string, prevState: any, formData: FormDat
             isFeatured: rawData.isFeatured === "on",
         });
 
-        // Don't overwrite content if it's not provided/handled in this specific form submission differently, 
-        // but here we assume the form sends everything.
-
         await prisma.sector.update({
             where: { id },
             data: {
                 ...validatedData,
+                deepDive: validatedData.deepDive ? JSON.parse(validatedData.deepDive) : null,
             },
         });
 

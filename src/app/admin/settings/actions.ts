@@ -13,6 +13,8 @@ const settingsSchema = z.object({
     twitter: z.string().optional(),
     instagram: z.string().optional(),
     youtube: z.string().optional(),
+    defaultMetaTitle: z.string().optional(),
+    defaultMetaDescription: z.string().optional(),
 });
 
 export async function getSettings() {

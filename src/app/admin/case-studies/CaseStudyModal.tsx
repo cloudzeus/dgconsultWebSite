@@ -12,6 +12,7 @@ import { createCaseStudy, updateCaseStudy } from "./actions";
 import { toast } from "sonner";
 import { Loader2, X, Upload } from "lucide-react";
 import Image from "next/image";
+import { SeoGenerator } from "@/components/admin/SeoGenerator";
 
 interface CaseStudyModalProps {
     isOpen: boolean;
@@ -22,11 +23,25 @@ interface CaseStudyModalProps {
 
 export function CaseStudyModal({ isOpen, onClose, caseStudy, onSuccess }: CaseStudyModalProps) {
     const [isLoading, setIsLoading] = useState(false);
-    const [images, setImages] = useState<string[]>(caseStudy?.images ? JSON.parse(caseStudy.images) : []);
+    const [images, setImages] = useState<string[]>((caseStudy as any)?.images ? JSON.parse((caseStudy as any).images) : []);
     const [featuredImage, setFeaturedImage] = useState<string | null>(caseStudy?.featuredImage || null);
-    const [logo, setLogo] = useState<string | null>(caseStudy?.logo || null);
+    const [logo, setLogo] = useState<string | null>((caseStudy as any)?.logo || null);
+
+    const [sourceData, setSourceData] = useState({
+        title: caseStudy?.title || "",
+        description: caseStudy?.description || "",
+        challenge: caseStudy?.challenge || "",
+        solution: caseStudy?.solution || "",
+        results: caseStudy?.results || "",
+    });
+    const [seoData, setSeoData] = useState({
+        metaTitle: (caseStudy as any)?.metaTitle || "",
+        metaDescription: (caseStudy as any)?.metaDescription || ""
+    });
 
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const aiContent = `Challenge: ${sourceData.challenge}\nSolution: ${sourceData.solution}\nResults: ${sourceData.results}`;
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'gallery' | 'featured' | 'logo') => {
         const files = e.target.files;
@@ -79,10 +94,7 @@ export function CaseStudyModal({ isOpen, onClose, caseStudy, onSuccess }: CaseSt
         if (featuredImage) formData.append("featuredImage", featuredImage);
         if (logo) formData.append("logo", logo);
 
-        // Ensure boolean check works
-        if (!formData.get("isPublished")) {
-            // It's handled by default false, but good to be explicit for unchecked checkboxes in some parsing logic
-        }
+        // SEO data needs to be in formData implicitly via inputs, but state ensures they are set.
 
         try {
             const res = caseStudy
@@ -105,7 +117,7 @@ export function CaseStudyModal({ isOpen, onClose, caseStudy, onSuccess }: CaseSt
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="w-[95vw] max-w-7xl max-h-[90vh] overflow-y-auto">
+            <DialogContent size="large">
                 <DialogHeader>
                     <DialogTitle>{caseStudy ? "Edit Case Study" : "New Case Study"}</DialogTitle>
                 </DialogHeader>
@@ -114,7 +126,13 @@ export function CaseStudyModal({ isOpen, onClose, caseStudy, onSuccess }: CaseSt
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="title">Title</Label>
-                            <Input id="title" name="title" required defaultValue={caseStudy?.title} />
+                            <Input
+                                id="title"
+                                name="title"
+                                required
+                                defaultValue={caseStudy?.title}
+                                onChange={(e) => setSourceData(prev => ({ ...prev, title: e.target.value }))}
+                            />
                         </div>
 
                         <div className="space-y-2">
@@ -135,7 +153,46 @@ export function CaseStudyModal({ isOpen, onClose, caseStudy, onSuccess }: CaseSt
 
                     <div className="space-y-2">
                         <Label htmlFor="description">Description (Short)</Label>
-                        <Textarea id="description" name="description" required defaultValue={caseStudy?.description} />
+                        <Textarea
+                            id="description"
+                            name="description"
+                            required
+                            defaultValue={caseStudy?.description}
+                            onChange={(e) => setSourceData(prev => ({ ...prev, description: e.target.value }))}
+                        />
+                    </div>
+
+                    <div className="space-y-4 border rounded-md p-4 bg-gray-50/50">
+                        <div className="flex justify-between items-center">
+                            <h3 className="font-semibold text-sm">SEO Configuration</h3>
+                            <SeoGenerator
+                                type="Case Study"
+                                title={sourceData.title}
+                                description={sourceData.description}
+                                content={aiContent}
+                                onGenerate={(t, d) => setSeoData({ metaTitle: t, metaDescription: d })}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="metaTitle">Meta Title</Label>
+                            <Input
+                                id="metaTitle"
+                                name="metaTitle"
+                                placeholder="Custom SEO Title"
+                                value={seoData.metaTitle}
+                                onChange={(e) => setSeoData({ ...seoData, metaTitle: e.target.value })}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="metaDescription">Meta Description</Label>
+                            <Textarea
+                                id="metaDescription"
+                                name="metaDescription"
+                                placeholder="Custom SEO Description"
+                                value={seoData.metaDescription}
+                                onChange={(e) => setSeoData({ ...seoData, metaDescription: e.target.value })}
+                            />
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-3 gap-4">
@@ -235,17 +292,32 @@ export function CaseStudyModal({ isOpen, onClose, caseStudy, onSuccess }: CaseSt
 
                     <div className="space-y-2">
                         <Label htmlFor="challenge">Challenge</Label>
-                        <Textarea id="challenge" name="challenge" defaultValue={caseStudy?.challenge || ""} />
+                        <Textarea
+                            id="challenge"
+                            name="challenge"
+                            defaultValue={caseStudy?.challenge || ""}
+                            onChange={(e) => setSourceData(prev => ({ ...prev, challenge: e.target.value }))}
+                        />
                     </div>
 
                     <div className="space-y-2">
                         <Label htmlFor="solution">Solution</Label>
-                        <Textarea id="solution" name="solution" defaultValue={caseStudy?.solution || ""} />
+                        <Textarea
+                            id="solution"
+                            name="solution"
+                            defaultValue={caseStudy?.solution || ""}
+                            onChange={(e) => setSourceData(prev => ({ ...prev, solution: e.target.value }))}
+                        />
                     </div>
 
                     <div className="space-y-2">
                         <Label htmlFor="results">Results</Label>
-                        <Textarea id="results" name="results" defaultValue={caseStudy?.results || ""} />
+                        <Textarea
+                            id="results"
+                            name="results"
+                            defaultValue={caseStudy?.results || ""}
+                            onChange={(e) => setSourceData(prev => ({ ...prev, results: e.target.value }))}
+                        />
                     </div>
 
                     <div className="flex items-center space-x-2">

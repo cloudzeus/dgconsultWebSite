@@ -4,6 +4,7 @@ import { useFormStatus } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { updateSettings } from "./actions";
 import { toast } from "sonner";
@@ -92,6 +93,25 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
                         <div className="space-y-2">
                             <Label htmlFor="youtube">YouTube</Label>
                             <Input id="youtube" name="youtube" defaultValue={initialSettings.youtube || ""} placeholder="https://youtube.com/..." />
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Global SEO Configuration</CardTitle>
+                        <CardDescription>
+                            Default Meta Title and Description for the homepage and when pages lack specific SEO.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="defaultMetaTitle">Default Meta Title</Label>
+                            <Input id="defaultMetaTitle" name="defaultMetaTitle" defaultValue={initialSettings.defaultMetaTitle || ""} placeholder="DGCONSULT - Business Solutions on Demand" />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="defaultMetaDescription">Default Meta Description</Label>
+                            <Textarea id="defaultMetaDescription" name="defaultMetaDescription" defaultValue={initialSettings.defaultMetaDescription || ""} placeholder="Leading consultancy in AgTech..." />
                         </div>
                     </CardContent>
                 </Card>

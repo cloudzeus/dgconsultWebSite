@@ -25,13 +25,19 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     }
 
     return {
-        title: `${sector.title} | DGCONSULT`,
-        description: sector.description,
+        title: (sector as any).metaTitle || `${sector.title} | DGCONSULT`,
+        description: (sector as any).metaDescription || sector.description,
+        openGraph: {
+            title: (sector as any).metaTitle || sector.title,
+            description: (sector as any).metaDescription || sector.description,
+            images: sector.featuredImage ? [sector.featuredImage] : [],
+        },
     };
 }
 
 import Header from "@/sections/Header";
 import Footer from "@/sections/Footer";
+import SectorClient from "./SectorClient";
 
 export default async function SectorPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
@@ -39,49 +45,32 @@ export default async function SectorPage({ params }: { params: Promise<{ slug: s
     // Parallel fetch
     const [sector, settings] = await Promise.all([
         prisma.sector.findUnique({ where: { slug } }),
-        prisma.globalSettings.findFirst()
+        (prisma as any).globalSettings.findFirst()
     ]);
 
     if (!sector || !sector.isActive) {
         notFound();
     }
 
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'Service',
+        name: sector.title,
+        description: sector.description,
+        provider: {
+            '@type': 'Organization',
+            name: 'DGCONSULT',
+            url: 'https://dgconsult.gr'
+        }
+    };
+
     return (
-        <main className="min-h-screen">
-            <Header settings={settings} />
-            <div className="pt-24 pb-16">
-                {/* Hero Section */}
-                <section className="container mx-auto px-4 md:px-6 mb-12">
-                    <Link
-                        href="/#sectors"
-                        className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-[#D32F2F] mb-6 transition-colors"
-                    >
-                        ← Back to Sectors
-                    </Link>
-
-                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">{sector.title}</h1>
-
-                    {sector.featuredImage && (
-                        <div className="relative w-full h-[400px] md:h-[500px] mb-8 rounded-2xl overflow-hidden">
-                            <Image
-                                src={sector.featuredImage}
-                                alt={sector.title}
-                                layout="fill"
-                                objectFit="cover"
-                                className="hover:scale-105 transition-transform duration-700"
-                            />
-                        </div>
-                    )}
-                </section>
-
-                {/* Content Section */}
-                <section className="container mx-auto px-4 md:px-6">
-                    <div className="max-w-4xl mx-auto prose prose-lg prose-red">
-                        <div dangerouslySetInnerHTML={{ __html: sector.content || sector.description }} />
-                    </div>
-                </section>
-            </div>
-            <Footer settings={settings} />
-        </main>
+        <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+            <SectorClient sector={sector} settings={settings} />
+        </>
     );
 }

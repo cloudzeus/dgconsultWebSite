@@ -10,10 +10,10 @@ import { DialogTrigger } from "@/components/ui/dialog";
 import ContactModal from "@/components/ContactModal";
 import { navItems } from "@/lib/data";
 
-import { GlobalSettings } from "@prisma/client";
+// import { GlobalSettings } from "@prisma/client";
 
 interface HeaderProps {
-  settings?: GlobalSettings | null;
+  settings?: any;
 }
 
 export default function Header({ settings }: HeaderProps) {
@@ -33,12 +33,12 @@ export default function Header({ settings }: HeaderProps) {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-        ? "bg-white/95 backdrop-blur-xl shadow-[0_4px_20px_rgba(0,0,0,0.08)]"
-        : "bg-transparent"
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled
+        ? "bg-black/90 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] border-b border-white/5"
+        : "bg-black/40 backdrop-blur-md border-b border-white/5"
         }`}
       style={{
-        height: isScrolled ? "64px" : "80px",
+        height: isScrolled ? "70px" : "90px",
       }}
     >
       <div className="max-w-[1280px] mx-auto px-6 h-full flex items-center justify-between">
@@ -62,33 +62,35 @@ export default function Header({ settings }: HeaderProps) {
             <Link
               key={item.href}
               href={item.href}
-              className="relative text-[#333333] font-medium text-sm hover:text-[#D32F2F] transition-colors duration-250 group"
+              className="relative text-white/70 font-bold text-xs tracking-widest uppercase hover:text-[#D32F2F] transition-all duration-300 group"
             >
               {item.label}
-              <span className="absolute -bottom-1 left-1/2 w-0 h-0.5 bg-[#D32F2F] transition-all duration-250 group-hover:w-full group-hover:left-0" />
+              <span className="absolute -bottom-1 left-1/2 w-0 h-px bg-[#D32F2F] transition-all duration-300 group-hover:w-full group-hover:left-0" />
             </Link>
           ))}
         </nav>
 
         {/* CTA Button */}
         <div className="hidden lg:block">
-          <ContactModal
-            settings={settings}
-            trigger={
-              <DialogTrigger asChild>
-                <Button className="bg-[#D32F2F] hover:bg-[#B71C1C] text-white font-semibold px-6 py-2.5 rounded-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(211,47,47,0.3)]">
-                  Ζητήστε Συμβουλευτική
-                </Button>
-              </DialogTrigger>
-            }
-          />
+          {mounted && (
+            <ContactModal
+              settings={settings}
+              trigger={
+                <DialogTrigger asChild>
+                  <Button className="bg-[#D32F2F] hover:bg-[#B71C1C] text-white font-semibold px-6 py-2.5 rounded-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(211,47,47,0.3)]">
+                    Ζητήστε Συμβουλευτική
+                  </Button>
+                </DialogTrigger>
+              }
+            />
+          )}
         </div>
 
         {/* Mobile Menu */}
         {mounted && (
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild className="lg:hidden">
-              <Button variant="ghost" size="icon" className="text-[#333333]">
+              <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>

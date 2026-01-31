@@ -20,6 +20,8 @@ const caseStudySchema = z.object({
     featuredImage: z.string().optional(),
     logo: z.string().optional(),
     images: z.string().optional(), // JSON string
+    metaTitle: z.string().optional(),
+    metaDescription: z.string().optional(),
 });
 
 export async function createCaseStudy(prevState: any, formData: FormData) {

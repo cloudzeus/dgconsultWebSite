@@ -9,6 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
   title: "DGCONSULT - Business Solutions on Demand",
   description: "Εξειδικευμένες λύσεις ψηφιακού μετασχηματισμού και ανάλυσης δεδομένων για τον αγροδιατροφικό τομέα. AI, IoT, Big Data Analytics.",
   keywords: ["ψηφιακός μετασχηματισμός", "big data", "αγροδιατροφικός τομέας", "IoT", "τεχνητή νοημοσύνη", "αυτοματοποίηση"],

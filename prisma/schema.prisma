@@ -88,6 +88,8 @@ model CaseStudy {
   results     String?  @db.Text
   images      String?  @db.LongText // JSON array of image URLs
   logo        String?
+  metaTitle   String?
+  metaDescription String? @db.Text
   sortOrder   Int      @default(0)
   isPublished Boolean  @default(false)
   publishedAt DateTime?
@@ -107,6 +109,8 @@ model Service {
   icon        String?
   features    String?  @db.Text
   benefits    String?  @db.Text
+  metaTitle   String?
+  metaDescription String? @db.Text
   isActive    Boolean  @default(true)
   sortOrder   Int      @default(0)
   createdAt   DateTime @default(now())
@@ -122,7 +126,10 @@ model Sector {
   title       String
   description String   @db.Text
   content     String   @db.LongText
+  deepDive    Json?
   featuredImage String?
+  metaTitle     String?
+  metaDescription String? @db.Text
   isActive    Boolean  @default(true)
   isFeatured  Boolean  @default(false)
   sortOrder   Int      @default(0)
@@ -180,6 +187,10 @@ model GlobalSettings {
   twitter     String?
   instagram   String?
   youtube     String?
+  
+  // SEO Defaults
+  defaultMetaTitle String?
+  defaultMetaDescription String? @db.Text
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

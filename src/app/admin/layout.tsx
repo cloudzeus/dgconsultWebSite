@@ -20,10 +20,6 @@ export default async function AdminLayout({
 }) {
     const session = await auth();
 
-    if (!session) {
-        redirect("/admin/login");
-    }
-
     const menuItems = [
         { icon: LayoutDashboard, label: "Επισκόπηση", href: "/admin/dashboard" },
         { icon: FileText, label: "Σελίδες", href: "/admin/pages" },
@@ -65,22 +61,24 @@ export default async function AdminLayout({
                 </nav>
 
                 {/* User Info & Logout */}
-                <div className="p-4 border-t border-gray-200">
-                    <div className="flex items-center gap-3 mb-3">
-                        <div className="w-10 h-10 rounded-full bg-[#D32F2F] flex items-center justify-center text-white font-bold">
-                            {session.user?.name?.charAt(0) || "A"}
+                {session && (
+                    <div className="p-4 border-t border-gray-200">
+                        <div className="flex items-center gap-3 mb-3">
+                            <div className="w-10 h-10 rounded-full bg-[#D32F2F] flex items-center justify-center text-white font-bold">
+                                {session.user?.name?.charAt(0) || "A"}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-gray-900 truncate">
+                                    {session.user?.name}
+                                </p>
+                                <p className="text-xs text-gray-500 truncate">
+                                    {session.user?.email}
+                                </p>
+                            </div>
                         </div>
-                        <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900 truncate">
-                                {session.user?.name}
-                            </p>
-                            <p className="text-xs text-gray-500 truncate">
-                                {session.user?.email}
-                            </p>
-                        </div>
+                        <LogoutButton />
                     </div>
-                    <LogoutButton />
-                </div>
+                )}
             </aside>
 
             {/* Main Content */}

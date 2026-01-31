@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Sector } from "@prisma/client";
 import {
     DndContext,
@@ -34,6 +34,11 @@ export function SortableSectorList({ initialItems }: SortableSectorListProps) {
     const [items, setItems] = useState(initialItems);
     const [editingItem, setEditingItem] = useState<Sector | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -41,6 +46,8 @@ export function SortableSectorList({ initialItems }: SortableSectorListProps) {
             coordinateGetter: sortableKeyboardCoordinates,
         })
     );
+
+    if (!mounted) return null;
 
     const handleDragEnd = async (event: DragEndEvent) => {
         const { active, over } = event;
@@ -120,6 +127,7 @@ export function SortableSectorList({ initialItems }: SortableSectorListProps) {
             </div>
 
             <SectorModal
+                key={editingItem?.id || "new"}
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 sector={editingItem}
@@ -145,6 +153,8 @@ function SortableRow({ item, onEdit, onDelete }: { item: Sector; onEdit: () => v
         transition,
     };
 
+    const sector = item as any;
+
     return (
         <TableRow ref={setNodeRef} style={style}>
             <TableCell className="w-[50px]">
@@ -153,11 +163,11 @@ function SortableRow({ item, onEdit, onDelete }: { item: Sector; onEdit: () => v
                 </button>
             </TableCell>
             <TableCell>
-                {item.featuredImage ? (
+                {sector.featuredImage ? (
                     <div className="relative w-12 h-8 rounded overflow-hidden bg-gray-100">
                         <img
-                            src={item.featuredImage}
-                            alt={item.title}
+                            src={sector.featuredImage}
+                            alt={sector.title}
                             className="w-full h-full object-cover"
                         />
                     </div>
@@ -167,17 +177,17 @@ function SortableRow({ item, onEdit, onDelete }: { item: Sector; onEdit: () => v
                     </div>
                 )}
             </TableCell>
-            <TableCell className="font-medium">{item.title}</TableCell>
-            <TableCell className="text-gray-500 font-mono text-xs">{item.slug}</TableCell>
+            <TableCell className="font-medium">{sector.title}</TableCell>
+            <TableCell className="text-gray-500 font-mono text-xs">{sector.slug}</TableCell>
             <TableCell>
-                {item.isFeatured ? (
+                {sector.isFeatured ? (
                     <Home className="h-4 w-4 text-blue-500" />
                 ) : (
                     <span className="text-gray-300">-</span>
                 )}
             </TableCell>
             <TableCell>
-                {item.isActive ? (
+                {sector.isActive ? (
                     <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                         <Power className="h-3 w-3" /> Active
                     </span>

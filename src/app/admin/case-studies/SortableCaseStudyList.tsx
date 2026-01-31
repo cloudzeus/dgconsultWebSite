@@ -122,6 +122,7 @@ export function SortableCaseStudyList({ initialItems }: SortableCaseStudyListPro
             </div>
 
             <CaseStudyModal
+                key={editingItem?.id || "new"}
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 caseStudy={editingItem}
