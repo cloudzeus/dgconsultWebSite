@@ -105,7 +105,7 @@ export function CaseStudyModal({ isOpen, onClose, caseStudy, onSuccess }: CaseSt
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="w-[95vw] max-w-7xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>{caseStudy ? "Edit Case Study" : "New Case Study"}</DialogTitle>
                 </DialogHeader>

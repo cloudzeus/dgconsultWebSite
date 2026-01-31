@@ -89,23 +89,23 @@ export function SortableCaseStudyList({ initialItems }: SortableCaseStudyListPro
             </div>
 
             <div className="bg-white rounded-md border">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="w-[50px]"></TableHead>
-                            <TableHead>Title</TableHead>
-                            <TableHead>Client</TableHead>
-                            <TableHead>Category</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead className="text-right">Actions</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        <DndContext
-                            sensors={sensors}
-                            collisionDetection={closestCenter}
-                            onDragEnd={handleDragEnd}
-                        >
+                <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                >
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead className="w-[50px]"></TableHead>
+                                <TableHead>Title</TableHead>
+                                <TableHead>Client</TableHead>
+                                <TableHead>Category</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead className="text-right">Actions</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
                             <SortableContext
                                 items={items.map(i => i.id)}
                                 strategy={verticalListSortingStrategy}
@@ -114,9 +114,9 @@ export function SortableCaseStudyList({ initialItems }: SortableCaseStudyListPro
                                     <SortableRow key={item.id} item={item} onEdit={() => { setEditingItem(item); setIsModalOpen(true); }} onDelete={() => handleDelete(item.id)} />
                                 ))}
                             </SortableContext>
-                        </DndContext>
-                    </TableBody>
-                </Table>
+                        </TableBody>
+                    </Table>
+                </DndContext>
             </div>
 
             <CaseStudyModal
