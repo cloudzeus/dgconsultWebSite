@@ -7,7 +7,7 @@ const sectors = [
     {
         title: "Αγροδιατροφικός Τομέας",
         description: "Λύσεις για ανάλυση δεδομένων πεδίου, παρακολούθηση παραγωγής, και έξυπνη διαχείριση πόρων (νερό, ενέργεια, καλλιέργειες).",
-        featuredImage: "/images/sector-agrifood.webp",
+        featuredImage: "https://dgsmart.b-cdn.net/sectors/1769881002118-sector-agrifood.webp",
         slug: "agrifood",
         isFeatured: true,
         sortOrder: 1,
@@ -15,7 +15,7 @@ const sectors = [
     {
         title: "Βιομηχανία & Παραγωγή",
         description: "Αυτοματοποίηση παραγωγικών διεργασιών, διαχείριση εφοδιαστικής αλυσίδας και συστήματα ποιοτικού ελέγχου.",
-        featuredImage: "/images/sector-industry.webp",
+        featuredImage: "https://dgsmart.b-cdn.net/sectors/1769881003309-sector-industry.webp",
         slug: "industry",
         isFeatured: true,
         sortOrder: 2,
@@ -23,7 +23,7 @@ const sectors = [
     {
         title: "Εφοδιαστική Αλυσίδα",
         description: "Συστήματα ιχνηλασιμότητας από το χωράφι έως τον καταναλωτή με IoT, RFID και blockchain τεχνολογίες.",
-        featuredImage: "/images/sector-supply-chain.webp",
+        featuredImage: "https://dgsmart.b-cdn.net/sectors/1769881004027-sector-supply-chain.webp",
         slug: "supply-chain",
         isFeatured: true,
         sortOrder: 3,
@@ -31,7 +31,7 @@ const sectors = [
     {
         title: "Βιωσιμότητα & Περιβάλλον",
         description: "Εργαλεία μείωσης ανθρακικού αποτυπώματος, βελτιστοποίησης πόρων και πράσινων πρακτικών λειτουργίας.",
-        featuredImage: "/images/sector-sustainability.webp",
+        featuredImage: "https://dgsmart.b-cdn.net/sectors/1769881004723-sector-sustainability.webp",
         slug: "sustainability",
         isFeatured: true,
         sortOrder: 4,
@@ -43,7 +43,7 @@ const caseStudies = [
         title: "Ψηφιακός Μετασχηματισμός Αγροτικού Συνεταιρισμού",
         description: "Υλοποίηση ολοκληρωμένου συστήματος παρακολούθησης καλλιεργειών και διαχείρισης πόρων.",
         content: "Η DGCONSULT σχεδίασε και υλοποίησε μια πρωτοποριακή πλατφόρμα για την ψηφιοποίηση των λειτουργιών ενός μεγάλου αγροτικού συνεταιρισμού. Το έργο περιελάμβανε την εγκατάσταση αισθητήρων IoT στο πεδίο, τη δημιουργία κεντρικού συστήματοςλ διαχείρισης δεδομένων και την ανάπτυξη εφαρμογής για τους παραγωγούς.",
-        featuredImage: "/images/case-study-1.webp",
+        featuredImage: "https://dgsmart.b-cdn.net/case-studies/1769881005657-case-study-1.webp",
         slug: "agricultural-cooperative",
         category: "Αγροδιατροφικός",
         clientName: "Αγροτικός Συνεταιρισμός Θεσσαλίας",
@@ -59,7 +59,7 @@ const caseStudies = [
         title: "Σύστημα Ιχνηλασιμότητας για Βιομηχανία Τροφίμων",
         description: "End-to-end ιχνηλασιμότητα από πρώτες ύλες έως τελικό προϊόν με blockchain τεχνολογία.",
         content: "Για μια κορυφαία βιομηχανία επεξεργασίας τροφίμων, αναπτύξαμε ένα σύστημα ιχνηλασιμότητας βασισμένο σε blockchain, διασφαλίζοντας την απόλυτη διαφάνεια και ασφάλεια σε όλα τα στάδια της εφοδιαστικής αλυσίδας.",
-        featuredImage: "/images/case-study-2.webp",
+        featuredImage: "https://dgsmart.b-cdn.net/case-studies/1769881006701-case-study-2.webp",
         slug: "food-traceability",
         category: "Βιομηχανία",
         clientName: "FoodTech Solutions S.A.",
@@ -75,7 +75,7 @@ const caseStudies = [
         title: "Αυτοματοποίηση Παραγωγής Οινοποιείου",
         description: "Smart manufacturing λύσεις για βελτιστοποίηση ποιότητας και μείωση κόστους.",
         content: "Το οινοποιείο χρειαζόταν έναν τρόπο να ελέγχει με ακρίβεια τη διαδικασία ζύμωσης και αποθήκευσης, διασφαλίζοντας τη σταθερή ποιότητα των βραβευμένων οίνων του.",
-        featuredImage: "/images/case-study-3.webp",
+        featuredImage: "https://dgsmart.b-cdn.net/case-studies/1769881007401-case-study-3.webp",
         slug: "winery-automation",
         category: "Παραγωγή",
         clientName: "Κτήμα Φωτεινό",
@@ -98,10 +98,13 @@ async function main() {
             await prisma.sector.create({
                 data: {
                     ...s,
-                    content: s.description, // Initial content from description
+                    content: s.description,
                 }
             });
             console.log(`Created sector: ${s.title}`);
+        } else {
+            // Optional: Update existing if we want to enforce the CDN URL
+            // await prisma.sector.update({ where: { slug: s.slug }, data: { featuredImage: s.featuredImage } });
         }
     }
 
