@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { Sector, GlobalSettings } from "@prisma/client";
 import Header from "@/sections/Header";
 import Hero from "@/sections/Hero";
 import Services from "@/sections/Services";
@@ -17,7 +18,7 @@ export const revalidate = 60; // Revalidate every 60 seconds
 
 export async function generateMetadata(): Promise<Metadata> {
   const hasDb = !!process.env.DB_URL;
-  let settings = null;
+  let settings: GlobalSettings | null = null;
 
   if (hasDb) {
     try {
@@ -44,8 +45,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  let sectors = [];
-  let settings = null;
+  let sectors: Sector[] = [];
+  let settings: GlobalSettings | null = null;
   const hasDb = !!process.env.DB_URL;
 
   if (hasDb) {
