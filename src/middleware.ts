@@ -1,24 +1,20 @@
 import { auth } from "@/auth"
-import { NextResponse } from "next/server"
-import type { NextRequest } from "next/server"
 
-export async function middleware(request: NextRequest) {
-    const session = await auth()
-    const isAdminRoute = request.nextUrl.pathname.startsWith("/admin")
-    const isLoginPage = request.nextUrl.pathname === "/admin/login"
+export default auth((req) => {
+    const isLoggedIn = !!req.auth
+    const isOnAdmin = req.nextUrl.pathname.startsWith("/admin")
+    const isLoginPage = req.nextUrl.pathname === "/admin/login"
 
-    // Redirect to login if accessing admin routes without authentication
-    if (isAdminRoute && !isLoginPage && !session) {
-        return NextResponse.redirect(new URL("/admin/login", request.url))
+    // 1. If looking at login page and logged in -> Redirect to dashboard
+    if (isLoginPage && isLoggedIn) {
+        return Response.redirect(new URL("/admin/dashboard", req.nextUrl))
     }
 
-    // Redirect to dashboard if already logged in and trying to access login page
-    if (isLoginPage && session) {
-        return NextResponse.redirect(new URL("/admin/dashboard", request.url))
+    // 2. If looking at other admin pages (not login) and NOT logged in -> Redirect to login
+    if (isOnAdmin && !isLoginPage && !isLoggedIn) {
+        return Response.redirect(new URL("/admin/login", req.nextUrl))
     }
-
-    return NextResponse.next()
-}
+})
 
 export const config = {
     matcher: ["/admin/:path*"],
