@@ -9,6 +9,7 @@ import {
     Users,
     Settings,
     Mail,
+    Layers,
 } from "lucide-react";
 import { LogoutButton } from "./LogoutButton";
 
@@ -27,6 +28,7 @@ export default async function AdminLayout({
         { icon: LayoutDashboard, label: "Επισκόπηση", href: "/admin/dashboard" },
         { icon: FileText, label: "Σελίδες", href: "/admin/pages" },
         { icon: Briefcase, label: "Case Studies", href: "/admin/case-studies" },
+        { icon: Layers, label: "Τομείς Εφαρμογής", href: "/admin/sectors" },
         { icon: Users, label: "Ομάδα", href: "/admin/team" },
         { icon: Mail, label: "Μηνύματα Επικοινωνίας", href: "/admin/messages" },
         { icon: Settings, label: "Ρυθμίσεις", href: "/admin/settings" },
