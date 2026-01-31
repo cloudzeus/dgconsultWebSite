@@ -86,6 +86,9 @@ model CaseStudy {
   industry    String?
   technologies String?
   results     String?  @db.Text
+  images      String?  @db.LongText // JSON array of image URLs
+  logo        String?
+  sortOrder   Int      @default(0)
   isPublished Boolean  @default(false)
   publishedAt DateTime?
   createdAt   DateTime @default(now())
