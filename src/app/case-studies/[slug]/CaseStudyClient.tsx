@@ -14,8 +14,10 @@ if (typeof window !== "undefined") {
     gsap.registerPlugin(ScrollTrigger);
 }
 
+import { CaseStudy } from "@/types";
+
 interface CaseStudyClientProps {
-    study: typeof caseStudies[0];
+    study: CaseStudy;
 }
 
 export default function CaseStudyClient({ study }: CaseStudyClientProps) {

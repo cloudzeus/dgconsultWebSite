@@ -1,4 +1,5 @@
 import { prisma, isDbConfigured } from "@/lib/db";
+import { caseStudies as staticCaseStudies } from "@/lib/data";
 import { notFound } from "next/navigation";
 import CaseStudyClient from "./CaseStudyClient";
 import { Metadata } from "next";
@@ -34,6 +35,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     }
 
     if (!study) {
+        study = (staticCaseStudies as any).find((s: any) => s.slug === slug);
+    }
+
+    if (!study) {
         return { title: 'Case Study Not Found' };
     }
 
@@ -56,13 +61,18 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
 
     // Fetch directly from DB
     let study = null;
-    try {
-        study = await prisma.caseStudy.findUnique({
-            where: { slug }
-        });
-    } catch (e) {
-        console.error("Prisma lookup error on case study page:", e);
-        notFound();
+    if (hasDb) {
+        try {
+            study = await prisma.caseStudy.findUnique({
+                where: { slug }
+            });
+        } catch (e) {
+            console.error("Prisma lookup error on case study page:", e);
+        }
+    }
+
+    if (!study) {
+        study = (staticCaseStudies as any).find((s: any) => s.slug === slug);
     }
 
     if (!study) {
@@ -70,11 +80,10 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
     }
 
     // Adapt DB model to Client Interface
-    // Note: technologies in DB is string (comma separated), Client expects array
-    const clientStudy = {
+    const clientStudy: any = {
         ...study,
-        image: study.featuredImage || "",
-        technologies: study.technologies ? study.technologies.split(',').map(t => t.trim()) : [],
+        featuredImage: study.featuredImage,
+        technologies: study.technologies ? (study.technologies as string).split(',').map((t: string) => t.trim()) : [],
         category: study.category || "",
         // Ensure content fields are present
         results: study.results || undefined,

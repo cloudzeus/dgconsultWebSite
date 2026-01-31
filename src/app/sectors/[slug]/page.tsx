@@ -1,4 +1,5 @@
 import { prisma, isDbConfigured } from "@/lib/db";
+import { sectors as staticSectors } from "@/lib/data";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -37,6 +38,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     }
 
     if (!sector) {
+        sector = (staticSectors as any).find((s: any) => s.slug === slug);
+    }
+
+    if (!sector) {
         return { title: 'Sector Not Found' };
     }
 
@@ -65,19 +70,24 @@ export default async function SectorPage({ params }: { params: Promise<{ slug: s
     let sector = null;
     let settings = null;
 
-    try {
-        const [sectorData, settingsData] = await Promise.all([
-            prisma.sector.findUnique({ where: { slug } }),
-            (prisma as any).globalSettings.findFirst()
-        ]);
-        sector = sectorData;
-        settings = settingsData;
-    } catch (e) {
-        console.error("Prisma lookup error on sector page:", e);
-        notFound();
+    if (hasDb) {
+        try {
+            const [sectorData, settingsData] = await Promise.all([
+                prisma.sector.findUnique({ where: { slug } }),
+                (prisma as any).globalSettings.findFirst()
+            ]);
+            sector = sectorData;
+            settings = settingsData;
+        } catch (e) {
+            console.error("Prisma lookup error on sector page:", e);
+        }
     }
 
-    if (!sector || !sector.isActive) {
+    if (!sector) {
+        sector = (staticSectors as any).find((s: any) => s.slug === slug);
+    }
+
+    if (!sector) {
         notFound();
     }
 
