@@ -162,8 +162,8 @@ export const stats: Stat[] = [
 ];
 
 export const contactInfo = {
-  address: "Λεωφόρος Συγγρού 123, Αθήνα 117 45",
-  phone: "+30 210 1234567",
+  address: "Λεωφ. Κηφισού 48, Περιστέρι – 121 33",
+  phone: "210 5711581",
   email: "info@dgconsult.gr",
   hours: "Δευτέρα - Παρασκευή, 09:00 - 18:00",
 };

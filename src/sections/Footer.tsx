@@ -130,7 +130,7 @@ export default function Footer() {
                   />
                 </svg>
                 <span className="text-gray-400">
-                  Λεωφόρος Συγγρού 123, Αθήνα 117 45
+                  Λεωφ. Κηφισού 48, Περιστέρι – 121 33
                 </span>
               </li>
               <li className="flex items-center gap-3">
@@ -148,10 +148,10 @@ export default function Footer() {
                   />
                 </svg>
                 <a
-                  href="tel:+302101234567"
+                  href="tel:2105711581"
                   className="text-gray-400 hover:text-white transition-colors"
                 >
-                  +30 210 1234567
+                  210 5711581
                 </a>
               </li>
               <li className="flex items-center gap-3">
